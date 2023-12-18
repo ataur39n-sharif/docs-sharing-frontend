@@ -14,7 +14,9 @@ const EditDocument = () => {
     });
 
     useEffect(() => {
-        const socket = io('http://localhost:5000')
+        const socket = io('http://localhost:5000',{
+            
+        })
         // socket.emit('connection', 'hello world')
         console.log(socket);
 
