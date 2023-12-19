@@ -1,44 +1,41 @@
 
+import { connectSocket } from "@/Redux/features/Socket/socket.slice";
+import { useAppDispatch, useAppSelector } from "@/Redux/hook";
 import ChatComponent from "@/components/chat";
 import "quill/dist/quill.snow.css"; // Add css for snow theme
 import { useEffect, useState } from "react";
 import { Button, Col, FloatingLabel, Form, Row } from "react-bootstrap";
 import { useQuill } from "react-quilljs";
-import { io } from "socket.io-client";
 
 const EditDocument = () => {
-    const [socketInfo, setSocketInfo] = useState()
+    const { socket } = useAppSelector(state => state.socket)
+    const id = useAppSelector(state => state.authentication.id)
+    const dispatch = useAppDispatch()
     const [title, setTitle] = useState('')
     const { quill, quillRef } = useQuill({
         placeholder: 'Document Body',
     });
 
     useEffect(() => {
-        const socket = io('http://localhost:5000',{
-            
-        })
-        // socket.emit('connection', 'hello world')
-        console.log(socket);
+        !socket && dispatch(connectSocket({
+            id: id as string,
+        }))
+    }, [id])
+    // console.log(socketState);
 
-    }, [])
+    useEffect(() => {
+        if (socket) {
+            socket.on('response', (response) => {
+                console.log(response);
+                // alert(response)
+                socket.emit('a', 'response received - from a')
+            })
+            socket.on('b', (response) => {
+                console.log(response);
+            })
 
-    // type: "alert" | "message"
-    /* 
-
-    [
-        {
-            type: "alert",
-            details: ""
-        },
-        {
-            type: "message",
-            details:""
         }
-    ]
-    
-    */
-
-
+    }, [socket])
 
     const handleSubmit = async () => {
         try {
@@ -47,6 +44,9 @@ const EditDocument = () => {
                 body: quill?.root.innerHTML
             }
             console.log('body', data);
+
+            socket?.emit('hello', { data, id: socket.id })
+
         } catch (error) {
             console.log((error as Error).message);
         }

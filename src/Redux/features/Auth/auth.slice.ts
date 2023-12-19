@@ -1,4 +1,4 @@
-import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface IAuthentication {
     email: string | undefined;
@@ -9,7 +9,7 @@ export interface IAuthentication {
 const initialState: IAuthentication = {
     email: undefined,
     accessToken: undefined,
-    id: undefined,
+    id: "1",
 }
 
 const AuthSlice = createSlice({
