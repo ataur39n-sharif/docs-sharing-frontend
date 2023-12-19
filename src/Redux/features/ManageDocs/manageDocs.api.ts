@@ -25,9 +25,9 @@ const DocsApiSlice = ApiSlice.injectEndpoints({
             invalidatesTags: ['docs']
         }),
         editDocs: builder.mutation({
-            query: (payload:{
-                id:string,
-                data:Partial<IDocs>
+            query: (payload: {
+                id: string,
+                data: Partial<IDocs>
             }) => ({
                 url: `/documents/${payload.id}`,
                 method: 'PATCH',
@@ -49,6 +49,7 @@ const DocsApiSlice = ApiSlice.injectEndpoints({
 export const {
     useGetAllDocsQuery,
     useGetSingleDocQuery,
+    useLazyGetSingleDocQuery,
     useAddDocsMutation,
     useEditDocsMutation,
     useDeleteDocsMutation

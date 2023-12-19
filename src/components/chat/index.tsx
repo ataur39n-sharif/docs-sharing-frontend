@@ -19,7 +19,7 @@ export default function ChatComponent({ id }: { id: string }) {
         dispatch(sendMessage({
             message: msg,
             firstName: authState?.name.firstName as string,
-            roomNumber:id
+            roomNumber: id
         }))
         setMsg('')
     }
@@ -38,11 +38,23 @@ export default function ChatComponent({ id }: { id: string }) {
                         socketState?.logs && socketState?.logs.map((log) => <p><strong>{log?.sender} : </strong>{log?.message}</p>)
                     }
                 </div>
+                <div>
+                    <small>
+                        {
+                            socketState.typing.length > 0 && socketState.typing.map(each => <span>{each.firstName}</span>)
+                        }
+                    </small>
+                </div>
                 <Row className="position-absolute w-100 d-flex justify-content-center align-items-center" style={{
                     maxHeight: '300px',
                     bottom: '17%'
                 }}>
                     <Col xs={12} md={10}>
+                        <small>
+                            {
+                                socketState.typing.length > 0 && socketState.typing.map(each => <span>{each.firstName} is typing....</span>)
+                            }
+                        </small>
                         <FloatingLabel controlId="floatingTextarea2" label="Write your message">
                             <Form.Control
                                 as="textarea"
@@ -52,6 +64,7 @@ export default function ChatComponent({ id }: { id: string }) {
                                 onChange={(e) => setMsg(e.target.value)}
                             />
                         </FloatingLabel>
+
                     </Col>
                     <Col className="text-center mt-2">
                         <Button onClick={() => handleSubmit()}>send message</Button>

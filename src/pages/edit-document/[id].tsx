@@ -1,6 +1,6 @@
 
-import { useEditDocsMutation, useGetSingleDocQuery } from "@/Redux/features/ManageDocs/manageDocs.api";
-import { connectSocket, updateLogs } from "@/Redux/features/Socket/socket.slice";
+import { useEditDocsMutation, useLazyGetSingleDocQuery } from "@/Redux/features/ManageDocs/manageDocs.api";
+import { connectSocket, manageTypingStatus, updateLogs } from "@/Redux/features/Socket/socket.slice";
 import { useAppDispatch, useAppSelector } from "@/Redux/hook";
 import ChatComponent from "@/components/chat";
 import { useRouter } from "next/router";
@@ -24,8 +24,13 @@ const EditDocument = () => {
     const [changed, setChanged] = useState(false)
 
     const router = useRouter()
-    const { isError, isSuccess, data, isLoading, error } = useGetSingleDocQuery(router.query.id as string)
+    const [fetchSingle, { isError, isSuccess, data, isLoading, error }] = useLazyGetSingleDocQuery()
+    // const { isError, isSuccess, data, isLoading, error } = useGetSingleDocQuery(router.query.id as string)
     const [updateDocs, options] = useEditDocsMutation()
+
+    useEffect(() => {
+        router && fetchSingle(router.query.id as string)
+    }, [router])
 
     useEffect(() => {
         //initialize socket connection
@@ -38,30 +43,25 @@ const EditDocument = () => {
 
     useEffect(() => {
         if (socket) {
-            // socket.on('joined-to-edit', (data) => {
-            //     // dispatch(updateLogs(data))
-            // })
-
-            console.log({
-                name: firstName,
-                roomNumber: router.query.id
-            });
-
-
-            // Client side
             socket.emit('joinRoom', {
                 name: firstName,
                 roomNumber: router.query.id
             });
             socket.on('userJoined', (data) => {
-                console.log('userJoined', data);
-
                 dispatch(updateLogs(data))
             });
-
             socket.on('message', (data) => {
                 console.log('message listener', data);
                 dispatch(updateLogs(data))
+            })
+            socket.on('update-docs-notify', (data) => {
+                console.log('message listener', data);
+                dispatch(updateLogs(data))
+                fetchSingle(router.query.id as string)
+            })
+            socket.on('typing-notify', (data) => {
+                console.log({ data });
+                dispatch(manageTypingStatus(data))
             })
         }
     }, [socket, router])
@@ -103,7 +103,25 @@ const EditDocument = () => {
 
     const handleChange = (name: string, value?: string) => {
         setChanged(true)
+        socket?.emit('typing', router.query.id, {
+            type: 'add',
+            firstName: firstName as string,
+            uid: uid as string,
+        })
+        // dispatch(manageTypingStatus({
+        //     type: 'add',
+        //     firstName: firstName as string,
+        //     uid: uid as string,
+        // }))
         name === 'title' && setTitle(value as string)
+    }
+
+    const stopChanging = () => {
+        socket?.emit('typing', router.query.id, {
+            type: 'remove',
+            firstName: firstName as string,
+            uid: uid as string,
+        })
     }
 
     const handleSubmit = async () => {
@@ -117,6 +135,7 @@ const EditDocument = () => {
                 id: router.query.id as string,
                 data
             })
+            socket?.emit('update-docs', router.query.id, firstName)
         } catch (error) {
             console.log((error as Error).message);
         }
@@ -142,13 +161,21 @@ const EditDocument = () => {
                             label="Document Title"
                             className="mb-3"
                         >
-                            <Form.Control type="text" placeholder="Document title" name="title" value={title} onChange={(e) => handleChange('title', e.target.value)} />
+                            <Form.Control type="text"
+                                placeholder="Document title"
+                                name="title" value={title}
+                                onChange={(e) => handleChange('title', e.target.value)}
+                                onKeyUp={() => stopChanging()}
+                            />
                         </FloatingLabel>
-                        <div className="mb-3" ref={quillRef} onKeyDown={() => handleChange('body')} style={{
-                            height: '30vh',
-                            minHeight: "30vh",
-                            maxWidth: "40vw"
-                        }} />
+                        <div className="mb-3" ref={quillRef}
+                            onKeyDown={() => handleChange('body')}
+                            onKeyUp={() => stopChanging()}
+                            style={{
+                                height: '30vh',
+                                minHeight: "30vh",
+                                maxWidth: "40vw"
+                            }} />
                         <Button onClick={() => handleSubmit()} variant="outline-danger">Update</Button>
                         {
                             changed && <Button onClick={() => handleReset()} className="ms-2" variant="outline-warning">Reset</Button>

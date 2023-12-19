@@ -12,13 +12,16 @@ type TLog = {
 type TInitialState = {
     socket: Socket<DefaultEventsMap, DefaultEventsMap> | null,
     logs: TLog[],
-    editingNow: string[]
+    typing: {
+        uid: string,
+        firstName: string,
+    }[]
 }
 
 const initialState: TInitialState = {
     socket: null,
     logs: [],
-    editingNow: []
+    typing: []
 }
 
 const SocketSlice = createSlice({
@@ -66,12 +69,28 @@ const SocketSlice = createSlice({
         updateLogs: (state, action: PayloadAction<TLog>) => {
             console.log(action.payload);
             state.logs.push(action.payload)
+        },
+        manageTypingStatus: (state, action: PayloadAction<{
+            type: 'add' | 'remove',
+            firstName: string,
+            uid: string
+        }>) => {
+            if (action.payload.type === 'add') {
+                const alreadyListed = state.typing.find((user) => user.uid === action.payload.uid)
+                !alreadyListed && state.typing.push({
+                    firstName: action.payload.firstName,
+                    uid: action.payload.uid
+                })
+            }
+            if (action.payload.type === 'remove') {
+                state.typing = state.typing.filter((user) => user.uid !== action.payload.uid)
+            }
         }
     }
 })
 
 export const {
-    connectSocket, sendMessage, updateLogs
+    connectSocket, sendMessage, updateLogs, manageTypingStatus
 } = SocketSlice.actions
 
 export default SocketSlice.reducer;
