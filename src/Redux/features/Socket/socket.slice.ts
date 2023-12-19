@@ -30,19 +30,21 @@ const SocketSlice = createSlice({
                         id: action.payload.id
                     }
                 })
-                // newSocket.emit('hello', newSocket)
                 newSocket.on('connection', () => {
                 })
-
-                console.log(newSocket);
                 state.socket = newSocket as any
             }
         },
+        updateLogs: (state, action: PayloadAction<TLog>) => {
+            console.log(action.payload);
+
+            state.logs.push(action.payload)
+        }
     }
 })
 
 export const {
-    connectSocket
+    connectSocket, updateLogs
 } = SocketSlice.actions
 
 export default SocketSlice.reducer;

@@ -1,5 +1,5 @@
 
-import { connectSocket } from "@/Redux/features/Socket/socket.slice";
+import { connectSocket, updateLogs } from "@/Redux/features/Socket/socket.slice";
 import { useAppDispatch, useAppSelector } from "@/Redux/hook";
 import ChatComponent from "@/components/chat";
 import "quill/dist/quill.snow.css"; // Add css for snow theme
@@ -17,6 +17,7 @@ const EditDocument = () => {
     });
 
     useEffect(() => {
+        //initialize socket connection
         !socket && dispatch(connectSocket({
             id: id as string,
         }))
@@ -25,15 +26,9 @@ const EditDocument = () => {
 
     useEffect(() => {
         if (socket) {
-            socket.on('response', (response) => {
-                console.log(response);
-                // alert(response)
-                socket.emit('a', 'response received - from a')
+            socket.on('joined-to-edit', (data) => {
+                dispatch(updateLogs(data))
             })
-            socket.on('b', (response) => {
-                console.log(response);
-            })
-
         }
     }, [socket])
 
@@ -45,8 +40,6 @@ const EditDocument = () => {
             }
             console.log('body', data);
 
-            socket?.emit('hello', { data, id: socket.id })
-
         } catch (error) {
             console.log((error as Error).message);
         }
@@ -54,7 +47,7 @@ const EditDocument = () => {
 
 
     return (
-        <Row>
+        <Row className="w-100">
             <Col>
                 <div className="container d-flex justify-content-center align-items-center" style={{
                     height: "100vh"
