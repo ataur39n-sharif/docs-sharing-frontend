@@ -1,14 +1,17 @@
 
+import { useGetSingleDocQuery } from "@/Redux/features/ManageDocs/manageDocs.api";
 import { connectSocket, updateLogs } from "@/Redux/features/Socket/socket.slice";
 import { useAppDispatch, useAppSelector } from "@/Redux/hook";
 import ChatComponent from "@/components/chat";
+import { useRouter } from "next/router";
 import "quill/dist/quill.snow.css"; // Add css for snow theme
 import { useEffect, useState } from "react";
 import { Button, Col, FloatingLabel, Form, Row } from "react-bootstrap";
+import toast from "react-hot-toast";
 import { useQuill } from "react-quilljs";
 
 const EditDocument = () => {
-    const { socket } = useAppSelector(state => state.socket)
+    const { socket } = useAppSelector(state => state.socketState)
     const id = useAppSelector(state => state.authentication.uid)
     const dispatch = useAppDispatch()
     const [title, setTitle] = useState('')
@@ -16,21 +19,44 @@ const EditDocument = () => {
         placeholder: 'Document Body',
     });
 
+    const router = useRouter()
+    const { isError, isSuccess, data, isLoading, error } = useGetSingleDocQuery(router.query.id as string)
+
     useEffect(() => {
         //initialize socket connection
         !socket && dispatch(connectSocket({
             id: id as string,
         }))
     }, [id])
-    // console.log(socketState);
 
     useEffect(() => {
         if (socket) {
             socket.on('joined-to-edit', (data) => {
+                console.log('joined to edit', data);
+
                 dispatch(updateLogs(data))
             })
         }
     }, [socket])
+
+    useEffect(() => {
+        isLoading && toast.loading('Please wait...', {
+            id: 'fetchSingle',
+        })
+        if (isSuccess) {
+            toast.success(data.message, {
+                id: 'fetchSingle',
+            })
+            // dispatch(authenticate(data.data))
+            console.log(data);
+
+            // router.replace('/')
+        }
+
+        isError && toast.error((error as any).data.message, {
+            id: 'fetchSingle',
+        })
+    }, [isError, isSuccess, data, isLoading, error])
 
     const handleSubmit = async () => {
         try {

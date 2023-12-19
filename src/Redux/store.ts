@@ -8,7 +8,7 @@ export const store = configureStore({
     reducer: {
         authentication: AuthReducer,
         docs: DocsReducer,
-        socket: SocketReducer,
+        socketState: SocketReducer,
         [ApiSlice.reducerPath]: ApiSlice.reducer
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(ApiSlice.middleware)

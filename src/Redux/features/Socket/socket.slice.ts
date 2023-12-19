@@ -20,7 +20,7 @@ const initialState: TInitialState = {
 }
 
 const SocketSlice = createSlice({
-    name: "Socket",
+    name: "SocketSlice",
     initialState,
     reducers: {
         connectSocket: (state, action: PayloadAction<{ id: string }>) => {
