@@ -7,31 +7,31 @@ const DocsApiSlice = ApiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getAllDocs: builder.query({
             query: () => ({
-                url: '/docs'
+                url: '/documents'
             })
         }),
         getSingleDoc: builder.query({
             query: (id: string) => ({
-                url: `/docs/${id}`
+                url: `/documents/${id}`
             })
         }),
         addDocs: builder.mutation({
             query: (payload) => ({
-                url: '/docs',
+                url: '/documents',
                 method: 'POST',
                 body: payload
             })
         }),
         editDocs: builder.mutation({
             query: (payload) => ({
-                url: `/docs/${payload.id}`,
+                url: `/documents/${payload.id}`,
                 method: 'PATCH',
                 body: payload.data
             })
         }),
         deleteDocs: builder.mutation({
             query: (id: string) => ({
-                url: `/docs/${id}`,
+                url: `/documents/${id}`,
                 method: 'DELETE',
             })
         }),

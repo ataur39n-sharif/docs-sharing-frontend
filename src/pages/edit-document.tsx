@@ -9,7 +9,7 @@ import { useQuill } from "react-quilljs";
 
 const EditDocument = () => {
     const { socket } = useAppSelector(state => state.socket)
-    const id = useAppSelector(state => state.authentication.id)
+    const id = useAppSelector(state => state.authentication.uid)
     const dispatch = useAppDispatch()
     const [title, setTitle] = useState('')
     const { quill, quillRef } = useQuill({

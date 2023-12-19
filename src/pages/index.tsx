@@ -1,3 +1,4 @@
+import HomepageComponent from '@/components/home'
 import { Inter } from 'next/font/google'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
@@ -19,6 +20,9 @@ export default function Home() {
         {/* <TextEditor /> */}
         <Button variant='outline-dark' onClick={() => router.replace('/add-document')}>Add document</Button>
         <Button variant='outline-dark' onClick={() => router.replace('/edit-document')}>Edit document</Button>
+        <div className='container'>
+          <HomepageComponent />
+        </div>
       </main>
     </>
   )
