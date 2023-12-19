@@ -12,7 +12,7 @@ import { useQuill } from "react-quilljs";
 
 const EditDocument = () => {
     const { socket } = useAppSelector(state => state.socketState)
-    const id = useAppSelector(state => state.authentication.uid)
+    const { uid, name: { firstName } } = useAppSelector(state => state.authentication)
     const dispatch = useAppDispatch()
     const [title, setTitle] = useState('')
     const { quill, quillRef } = useQuill();
@@ -29,18 +29,42 @@ const EditDocument = () => {
 
     useEffect(() => {
         //initialize socket connection
-        !socket && dispatch(connectSocket({
-            id: id as string,
+        uid && router && dispatch(connectSocket({
+            uid: uid as string,
+            name: firstName as string,
+            roomNumber: router.query.id as string
         }))
-    }, [id])
+    }, [uid, firstName, router])
 
     useEffect(() => {
         if (socket) {
-            socket.on('joined-to-edit', (data) => {
+            // socket.on('joined-to-edit', (data) => {
+            //     // dispatch(updateLogs(data))
+            // })
+
+            console.log({
+                name: firstName,
+                roomNumber: router.query.id
+            });
+
+
+            // Client side
+            socket.emit('joinRoom', {
+                name: firstName,
+                roomNumber: router.query.id
+            });
+            socket.on('userJoined', (data) => {
+                console.log('userJoined', data);
+
+                dispatch(updateLogs(data))
+            });
+
+            socket.on('message', (data) => {
+                console.log('message listener', data);
                 dispatch(updateLogs(data))
             })
         }
-    }, [socket])
+    }, [socket, router])
 
     useEffect(() => {
         isLoading && toast.loading('Please wait...', {
@@ -133,7 +157,7 @@ const EditDocument = () => {
                 </div>
             </Col>
             <Col style={{
-                maxHeight:"90vh"
+                maxHeight: "90vh"
             }}>
                 <ChatComponent id={router.query.id as string} />
             </Col>

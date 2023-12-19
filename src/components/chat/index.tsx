@@ -19,6 +19,7 @@ export default function ChatComponent({ id }: { id: string }) {
         dispatch(sendMessage({
             message: msg,
             firstName: authState?.name.firstName as string,
+            roomNumber:id
         }))
         setMsg('')
     }
@@ -34,7 +35,7 @@ export default function ChatComponent({ id }: { id: string }) {
                     maxHeight: "70vh"
                 }}>
                     {
-                        socketState?.logs && socketState?.logs.map((log) => <p><strong>{log.sender} : </strong>{log.message}</p>)
+                        socketState?.logs && socketState?.logs.map((log) => <p><strong>{log?.sender} : </strong>{log?.message}</p>)
                     }
                 </div>
                 <Row className="position-absolute w-100 d-flex justify-content-center align-items-center" style={{
