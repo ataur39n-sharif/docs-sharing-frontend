@@ -1,9 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 export interface IDocs {
-    _id: string
+    _id?: string
     uid: string
-    titles: string
+    title: string
     body: string
     createdAt?: Date
     updatedAt?: Date

@@ -5,5 +5,6 @@ export const ApiSlice = createApi({
     baseQuery:fetchBaseQuery({
         baseUrl:'http://localhost:5000/api/v1',
     }),
+    tagTypes:['docs'],
     endpoints:()=>({})
 })

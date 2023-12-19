@@ -5,10 +5,10 @@ import Table from 'react-bootstrap/Table';
 
 function HomepageComponent() {
     const { isError, isSuccess, data } = useGetAllDocsQuery({})
-    console.log({ isError, isSuccess, data });
+    console.log(isError, isSuccess, data?.data);
 
     return (
-        <Table striped bordered hover variant="dark">
+        <Table striped bordered hover variant="dark" className='text-center'>
             <thead>
                 <tr>
                     <th>id</th>
@@ -25,17 +25,17 @@ function HomepageComponent() {
                     </tr>
                 }
                 {
-                    data?.data?.map((doc: IDocs) => {
+                    data?.data.length > 0 && data?.data.map((doc: IDocs) => (
                         <tr>
                             <td>{doc._id}</td>
-                            <td>{doc.titles}</td>
+                            <td>{doc.title}</td>
                             <td>
-                                <Button variant='outline-warning'>Edit</Button>
-                                <Button variant='outline-danger'>Delete</Button>
+                                <Button className='' variant='outline-warning'>Edit</Button>
+                                <Button className='ms-3' variant='outline-danger'>Delete</Button>
 
                             </td>
                         </tr>
-                    })
+                    ))
                 }
             </tbody>
         </Table>

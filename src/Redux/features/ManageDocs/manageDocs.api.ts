@@ -1,5 +1,5 @@
 import { ApiSlice } from "../../api/api.slice"
-
+import { IDocs } from "./manageDocs.slice"
 
 
 
@@ -8,7 +8,8 @@ const DocsApiSlice = ApiSlice.injectEndpoints({
         getAllDocs: builder.query({
             query: () => ({
                 url: '/documents'
-            })
+            }),
+            providesTags: ['docs']
         }),
         getSingleDoc: builder.query({
             query: (id: string) => ({
@@ -16,25 +17,29 @@ const DocsApiSlice = ApiSlice.injectEndpoints({
             })
         }),
         addDocs: builder.mutation({
-            query: (payload) => ({
+            query: (payload: IDocs) => ({
                 url: '/documents',
                 method: 'POST',
                 body: payload
-            })
+            }),
+            invalidatesTags: ['docs']
         }),
         editDocs: builder.mutation({
             query: (payload) => ({
                 url: `/documents/${payload.id}`,
                 method: 'PATCH',
                 body: payload.data
-            })
+            }),
+            invalidatesTags: ['docs']
         }),
         deleteDocs: builder.mutation({
             query: (id: string) => ({
                 url: `/documents/${id}`,
                 method: 'DELETE',
-            })
+            }),
+            invalidatesTags: ['docs']
         }),
+
     })
 })
 

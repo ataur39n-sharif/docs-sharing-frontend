@@ -1,13 +1,36 @@
+import { useAddDocsMutation } from "@/Redux/features/ManageDocs/manageDocs.api";
+import { store } from "@/Redux/store";
+import { useRouter } from "next/router";
 import "quill/dist/quill.snow.css"; // Add css for snow theme
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, FloatingLabel, Form } from "react-bootstrap";
+import toast from "react-hot-toast";
 import { useQuill } from "react-quilljs";
 export default function AddDocument() {
     const [title, setTitle] = useState('')
     const { quill, quillRef } = useQuill({
         placeholder: 'Document Body',
     });
+    const router = useRouter()
+    const [addDocs, options] = useAddDocsMutation()
 
+    useEffect(() => {
+        options.isLoading && toast.loading('Please wait...', {
+            id: 'addDocs',
+        })
+        if (options.isSuccess) {
+            toast.success(options.data.message, {
+                id: 'addDocs',
+            })
+            console.log(options.data);
+
+            router.replace('/')
+        }
+
+        options.isError && toast.error((options.error as any).data.message, {
+            id: 'addDocs',
+        })
+    }, [options])
 
     const handleSubmit = async () => {
         try {
@@ -16,8 +39,16 @@ export default function AddDocument() {
                 body: quill?.root.innerHTML
             }
             console.log('body', data);
+            addDocs({
+                title,
+                body: quill?.root.innerHTML as string,
+                uid: store.getState().authentication.uid as string,
+            })
         } catch (error) {
             console.log((error as Error).message);
+            toast.error((error as Error).message, {
+                id: 'signin',
+            })
         }
     }
 
