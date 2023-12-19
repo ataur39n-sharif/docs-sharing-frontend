@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from "@/Redux/hook";
 import { useState } from "react";
 import { Button, Col, FloatingLabel, Form, Row } from "react-bootstrap";
 
-export default function ChatComponent() {
+export default function ChatComponent({ id }: { id: string }) {
     const socketState = useAppSelector(state => state.socketState)
     const authState = useAppSelector(state => state.authentication)
     const [isChatOpen, setIsChatOpen] = useState(false)
@@ -25,6 +25,9 @@ export default function ChatComponent() {
 
     return (
         <div className="bg-light h-100 container ">
+            <div className="text-center p-5">
+                <h5> Room No - {id}</h5>
+            </div>
             <div className="position-relative h-100">
                 <div className="overflow-auto p-5" style={{
                     height: "70vh",
@@ -36,7 +39,7 @@ export default function ChatComponent() {
                 </div>
                 <Row className="position-absolute w-100 d-flex justify-content-center align-items-center" style={{
                     maxHeight: '300px',
-                    bottom: '10%'
+                    bottom: '17%'
                 }}>
                     <Col xs={12} md={10}>
                         <FloatingLabel controlId="floatingTextarea2" label="Write your message">

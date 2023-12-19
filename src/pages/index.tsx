@@ -2,7 +2,6 @@ import HomepageComponent from '@/components/home'
 import { Inter } from 'next/font/google'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { Button } from 'react-bootstrap'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -17,10 +16,8 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        {/* <TextEditor /> */}
-        <Button variant='outline-dark' onClick={() => router.replace('/add-document')}>Add document</Button>
-        <Button variant='outline-dark' onClick={() => router.replace('/edit-document')}>Edit document</Button>
-        <div className='container'>
+        <div className='container p-5 mt-5'>
+          <h1 className='text-center m-5'>Document List</h1>
           <HomepageComponent />
         </div>
       </main>

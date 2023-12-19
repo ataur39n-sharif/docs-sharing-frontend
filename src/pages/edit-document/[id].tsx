@@ -132,8 +132,10 @@ const EditDocument = () => {
                     </div>
                 </div>
             </Col>
-            <Col>
-                <ChatComponent />
+            <Col style={{
+                maxHeight:"90vh"
+            }}>
+                <ChatComponent id={router.query.id as string} />
             </Col>
         </Row>
     )

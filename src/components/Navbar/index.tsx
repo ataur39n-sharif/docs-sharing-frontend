@@ -1,5 +1,6 @@
 import { logout } from "@/Redux/features/Auth/auth.slice"
 import { useAppDispatch, useAppSelector } from "@/Redux/hook"
+import Link from "next/link"
 import { useRouter } from "next/router"
 import { Button, Container, Navbar } from "react-bootstrap"
 
@@ -14,6 +15,7 @@ const NavbarComponent = () => {
             <Navbar className="bg-body-tertiary">
                 <Container>
                     <Navbar.Brand href="/">Smart Docs </Navbar.Brand>
+                    <Link href="/add-document" className="ms-5 btn">Add Document</Link>
                     <Navbar.Toggle />
                     <Navbar.Collapse className="justify-content-end">
                         {
