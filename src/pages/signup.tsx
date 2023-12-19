@@ -43,10 +43,10 @@ const SignUp = () => {
                 email: info.email,
                 password: info.password
             })
-
-
         } catch (error) {
-
+            toast.error((error as Error).message, {
+                id: 'signup',
+            })
         }
     }
 

@@ -3,13 +3,13 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export interface IAuthentication {
     email: string | undefined;
     accessToken: string | undefined;
-    id: string | undefined;
+    uid: string | undefined;
 }
 
 const initialState: IAuthentication = {
     email: undefined,
     accessToken: undefined,
-    id: "1",
+    uid: undefined,
 }
 
 const AuthSlice = createSlice({
@@ -17,14 +17,16 @@ const AuthSlice = createSlice({
     initialState,
     reducers: {
         authenticate: (state, action: PayloadAction<IAuthentication>) => {
-            state.accessToken = action.payload.accessToken
-            state.email = action.payload.email
-            state.id = action.payload.id
+            const { accessToken, email, uid } = action.payload
+            state.accessToken = accessToken
+            state.email = email
+            state.uid = uid
             localStorage.setItem('auth', JSON.stringify(action.payload))
         },
         logout: (state) => {
             state.accessToken = ""
             state.email = ""
+            state.uid = ""
             localStorage.clear()
         }
     }
