@@ -18,13 +18,12 @@ const ProtectedRoute = ({ children }: IProps) => {
         if (authState.accessToken && publicRoutes.includes(router.pathname)) {
             router.replace('/')
         }
-        console.log(router.pathname);
 
-    }, [router.pathname])
+    }, [router.pathname, authState.accessToken])
     return (
         <>
             {
-                !authState.accessToken ? <p>Please wait...</p> : children
+                children
             }
         </>
     )

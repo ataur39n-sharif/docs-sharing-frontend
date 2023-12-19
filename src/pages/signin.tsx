@@ -27,7 +27,7 @@ const Signin = () => {
             dispatch(authenticate(options.data.data))
             console.log(options.data);
 
-            // router.replace('/')
+            router.replace('/')
         }
 
         options.isError && toast.error((options.error as any).data.message, {

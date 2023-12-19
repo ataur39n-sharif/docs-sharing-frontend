@@ -1,14 +1,20 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface IAuthentication {
-    name: string | undefined;
+    name: {
+        firstName: string | undefined;
+        lastName: string | undefined
+    };
     email: string | undefined;
     accessToken: string | undefined;
     uid: string | undefined;
 }
 
 const initialState: IAuthentication = {
-    name: undefined,
+    name: {
+        firstName: undefined,
+        lastName: undefined,
+    },
     email: undefined,
     accessToken: undefined,
     uid: undefined,
@@ -27,10 +33,13 @@ const AuthSlice = createSlice({
             localStorage.setItem('auth', JSON.stringify(action.payload))
         },
         logout: (state) => {
-            state.accessToken = ""
-            state.email = ""
-            state.uid = ""
-            state.name = ""
+            state.accessToken = undefined
+            state.email = undefined
+            state.uid = undefined
+            state.name = {
+                firstName: undefined,
+                lastName: undefined
+            }
             localStorage.clear()
         }
     }
