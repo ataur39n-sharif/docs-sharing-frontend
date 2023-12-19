@@ -1,5 +1,5 @@
 
-import { useGetSingleDocQuery } from "@/Redux/features/ManageDocs/manageDocs.api";
+import { useEditDocsMutation, useGetSingleDocQuery } from "@/Redux/features/ManageDocs/manageDocs.api";
 import { connectSocket, updateLogs } from "@/Redux/features/Socket/socket.slice";
 import { useAppDispatch, useAppSelector } from "@/Redux/hook";
 import ChatComponent from "@/components/chat";
@@ -15,12 +15,17 @@ const EditDocument = () => {
     const id = useAppSelector(state => state.authentication.uid)
     const dispatch = useAppDispatch()
     const [title, setTitle] = useState('')
-    const { quill, quillRef } = useQuill({
-        placeholder: 'Document Body',
-    });
+    const { quill, quillRef } = useQuill();
+
+    const [draft, setDraft] = useState({
+        title: '',
+        body: ''
+    })
+    const [changed, setChanged] = useState(false)
 
     const router = useRouter()
     const { isError, isSuccess, data, isLoading, error } = useGetSingleDocQuery(router.query.id as string)
+    const [updateDocs, options] = useEditDocsMutation()
 
     useEffect(() => {
         //initialize socket connection
@@ -32,8 +37,6 @@ const EditDocument = () => {
     useEffect(() => {
         if (socket) {
             socket.on('joined-to-edit', (data) => {
-                console.log('joined to edit', data);
-
                 dispatch(updateLogs(data))
             })
         }
@@ -47,16 +50,37 @@ const EditDocument = () => {
             toast.success(data.message, {
                 id: 'fetchSingle',
             })
-            // dispatch(authenticate(data.data))
             console.log(data);
-
-            // router.replace('/')
+            if (data.data) {
+                setTitle(data.data.title)
+                quill?.clipboard.dangerouslyPasteHTML(data.data.body)
+            }
         }
 
         isError && toast.error((error as any).data.message, {
             id: 'fetchSingle',
         })
     }, [isError, isSuccess, data, isLoading, error])
+
+    useEffect(() => {
+        options.isLoading && toast.loading('Please wait...', {
+            id: 'updateDocs',
+        })
+        if (options.isSuccess) {
+            toast.success(options.data.message, {
+                id: 'updateDocs',
+            })
+        }
+
+        options.isError && toast.error((options.error as any).data.message, {
+            id: 'updateDocs',
+        })
+    }, [options])
+
+    const handleChange = (name: string, value?: string) => {
+        setChanged(true)
+        name === 'title' && setTitle(value as string)
+    }
 
     const handleSubmit = async () => {
         try {
@@ -65,10 +89,19 @@ const EditDocument = () => {
                 body: quill?.root.innerHTML
             }
             console.log('body', data);
-
+            updateDocs({
+                id: router.query.id as string,
+                data
+            })
         } catch (error) {
             console.log((error as Error).message);
         }
+    }
+
+    const handleReset = () => {
+        quill?.clipboard.dangerouslyPasteHTML(data.data.body)
+        setTitle(data.data.title)
+        setChanged(false)
     }
 
 
@@ -85,14 +118,17 @@ const EditDocument = () => {
                             label="Document Title"
                             className="mb-3"
                         >
-                            <Form.Control type="text" placeholder="Document title" name="title" onChange={(e) => setTitle(e.target.value)} />
+                            <Form.Control type="text" placeholder="Document title" name="title" value={title} onChange={(e) => handleChange('title', e.target.value)} />
                         </FloatingLabel>
-                        <div className="mb-3" ref={quillRef} style={{
+                        <div className="mb-3" ref={quillRef} onKeyDown={() => handleChange('body')} style={{
                             height: '30vh',
                             minHeight: "30vh",
                             maxWidth: "40vw"
                         }} />
-                        <Button onClick={() => handleSubmit()} variant="outline-dark">Submit</Button>
+                        <Button onClick={() => handleSubmit()} variant="outline-danger">Update</Button>
+                        {
+                            changed && <Button onClick={() => handleReset()} className="ms-2" variant="outline-warning">Reset</Button>
+                        }
                     </div>
                 </div>
             </Col>

@@ -1,12 +1,27 @@
-import { useAppSelector } from "@/Redux/hook";
+import { sendMessage } from "@/Redux/features/Socket/socket.slice";
+import { useAppDispatch, useAppSelector } from "@/Redux/hook";
 import { useState } from "react";
 import { Button, Col, FloatingLabel, Form, Row } from "react-bootstrap";
 
 export default function ChatComponent() {
     const socketState = useAppSelector(state => state.socketState)
+    const authState = useAppSelector(state => state.authentication)
     const [isChatOpen, setIsChatOpen] = useState(false)
+    const dispatch = useAppDispatch()
+
+    const [msg, setMsg] = useState('')
 
     console.log(socketState?.logs);
+
+    const handleSubmit = () => {
+        console.log(authState);
+
+        dispatch(sendMessage({
+            message: msg,
+            firstName: authState?.name.firstName as string,
+        }))
+        setMsg('')
+    }
 
     return (
         <div className="bg-light h-100 container ">
@@ -19,7 +34,7 @@ export default function ChatComponent() {
                         socketState?.logs && socketState?.logs.map((log) => <p><strong>{log.sender} : </strong>{log.message}</p>)
                     }
                 </div>
-                <Row className="position-absolute w-100" style={{
+                <Row className="position-absolute w-100 d-flex justify-content-center align-items-center" style={{
                     maxHeight: '300px',
                     bottom: '10%'
                 }}>
@@ -29,11 +44,13 @@ export default function ChatComponent() {
                                 as="textarea"
                                 placeholder="type your message"
                                 style={{ height: '100px', maxHeight: '200px' }}
+                                value={msg}
+                                onChange={(e) => setMsg(e.target.value)}
                             />
                         </FloatingLabel>
                     </Col>
-                    <Col className="d-flex justify-content-center align-items-center">
-                        <Button>send message</Button>
+                    <Col className="text-center mt-2">
+                        <Button onClick={() => handleSubmit()}>send message</Button>
                     </Col>
                 </Row>
             </div>

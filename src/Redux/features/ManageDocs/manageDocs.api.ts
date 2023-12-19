@@ -25,7 +25,10 @@ const DocsApiSlice = ApiSlice.injectEndpoints({
             invalidatesTags: ['docs']
         }),
         editDocs: builder.mutation({
-            query: (payload) => ({
+            query: (payload:{
+                id:string,
+                data:Partial<IDocs>
+            }) => ({
                 url: `/documents/${payload.id}`,
                 method: 'PATCH',
                 body: payload.data

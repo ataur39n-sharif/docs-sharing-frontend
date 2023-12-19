@@ -2,22 +2,22 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface IAuthentication {
     name: {
-        firstName: string | undefined;
-        lastName: string | undefined
+        firstName: string | null;
+        lastName: string | null
     };
-    email: string | undefined;
-    accessToken: string | undefined;
-    uid: string | undefined;
+    email: string | null;
+    accessToken: string | null;
+    uid: string | null;
 }
 
 const initialState: IAuthentication = {
     name: {
-        firstName: undefined,
-        lastName: undefined,
+        firstName: null,
+        lastName: null,
     },
-    email: undefined,
-    accessToken: undefined,
-    uid: undefined,
+    email: null,
+    accessToken: null,
+    uid: null,
 }
 
 const AuthSlice = createSlice({
@@ -33,12 +33,12 @@ const AuthSlice = createSlice({
             localStorage.setItem('auth', JSON.stringify(action.payload))
         },
         logout: (state) => {
-            state.accessToken = undefined
-            state.email = undefined
-            state.uid = undefined
+            state.accessToken = null
+            state.email = null
+            state.uid = null
             state.name = {
-                firstName: undefined,
-                lastName: undefined
+                firstName: null,
+                lastName: null
             }
             localStorage.clear()
         }
