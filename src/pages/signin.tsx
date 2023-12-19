@@ -45,6 +45,7 @@ const Signin = () => {
             })
         }
     }
+    console.log(router.pathname);
 
     return (
         <div className="container d-flex justify-content-center align-items-center" style={{
